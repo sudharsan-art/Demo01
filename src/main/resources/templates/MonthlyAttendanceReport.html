@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Employee Attendance Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            page-break-after: always;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f2F8;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<div>hi
+    <img th:src="'https://cybervidya.s3.ap-south-1.amazonaws.com/QA/instance-logo.png   '" alt="Employee Image" /></div>
+<h1>Employee Attendance Report</h1>
+<!--<div th:each="page, pageStat : ${#lists.partition(attendanceList, pageSize)}" class="page">-->
+<table border="1">
+    <thead>
+    <tr>
+        <th>DATE</th>
+        <th>WORK MODE</th>
+        <th>STATUS</th>
+        <th>TOTAL WORKING HOURS</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="dto : ${attendanceList}">
+        <td th:text="${dto.date}"></td>
+        <td th:text="${dto.workMode}"></td>
+        <td th:text="${dto.status}"></td>
+        <td th:text="${dto.totalWorkingHours}"></td>
+    </tr>
+    <tr th:if="${attendanceList.size() == 0}">
+        <td colspan="4" style="text-align:center;">No data available</td>
+    </tr>
+    </tbody>
+</table>
+<!--</div>-->
+</body>
+</html>
