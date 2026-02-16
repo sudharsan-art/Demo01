@@ -1,9 +1,6 @@
 package com.app.employeedesk.service;
 
-import com.app.employeedesk.dto.LeaveFilterDto;
-import com.app.employeedesk.dto.LeavePermissionDto;
-import com.app.employeedesk.dto.LeaveRequestDto;
-import com.app.employeedesk.dto.LeaveRequestListDto;
+import com.app.employeedesk.dto.*;
 import com.app.employeedesk.entity.EmployeeBasicDetails;
 import com.app.employeedesk.entity.EmployeeWeekOff;
 import com.app.employeedesk.entity.LeaveRequest;
@@ -247,5 +244,15 @@ public class LeaveRequestService {
             throw new CustomValidationsException(messageService.messageResponse("no.check.because.leave.status.accept"));
         }
     }
+
+    public String createLeaveRequestV2(Principal principal, LeaveRequestCreateV2Dto dto) {
+        // 1) load employee + role
+        // 2) fetch active role policies
+        // 3) ensure dto.leaveCode exists in role policy
+        // 4) save request with PENDING status
+        // 5) return success key
+        return messageService.messageResponse("leave.request.sent.successfully");
+    }
+
 
 }
