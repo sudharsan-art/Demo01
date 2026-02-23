@@ -13,7 +13,8 @@ import java.util.UUID;
 public interface UserDetailsRepository extends JpaRepository<UserDetails, UUID> {
 
 
-    Optional<org.springframework.security.core.userdetails.UserDetails> findByUserName(String username);
+    Optional<UserDetails> findByUserName(String username);
+
 
     @Query("select u from UserDetails u where u.userName=:name")
     UserDetails findByUserNamevalue(String name);

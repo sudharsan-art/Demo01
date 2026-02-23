@@ -96,7 +96,7 @@ public class UserRegisterService {
 
         var userDetails = UserDetails.builder()
                 .name(request.getFirstName()+" "+request.getLastName())
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .phoneNumber(request.getPhoneNumber())
                 .userName(request.getEmail())
                 .status(Status.ACTIVE)

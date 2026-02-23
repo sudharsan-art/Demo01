@@ -30,7 +30,9 @@ import java.util.UUID;
 public class UserDetails extends AuditWithBaseEntity implements org.springframework.security.core.userdetails.UserDetails, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private UUID id;
     @Column(name = "name")
     private String name;
@@ -52,7 +54,9 @@ public class UserDetails extends AuditWithBaseEntity implements org.springframew
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
     }
 
     @Override
