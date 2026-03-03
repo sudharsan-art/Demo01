@@ -1,15 +1,15 @@
 package com.app.employeedesk.controller;
 
 import com.app.employeedesk.dto.LeaveRequestV2Dto;
+import com.app.employeedesk.enumeration.LeaveStatus;
 import com.app.employeedesk.security.JwtService;
 import com.app.employeedesk.service.LeaveServiceV2;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/leaves")
@@ -27,5 +27,14 @@ public class LeaveControllerV2 {
         leaveServiceV2.applyLeave(leaveRequestV2Dto, email);
 
         return ResponseEntity.ok("Leave applied successfully");
+    }
+
+    @PutMapping("/{leaveId}")
+    public ResponseEntity<?> approveLeave(
+            @PathVariable UUID leaveId,
+            @RequestParam LeaveStatus status
+    ) {
+        leaveServiceV2.approveLeave(leaveId, status);
+        return ResponseEntity.ok("Leave updated successfully");
     }
 }
