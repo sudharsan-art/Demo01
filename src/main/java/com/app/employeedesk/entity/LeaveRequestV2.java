@@ -1,6 +1,7 @@
 package com.app.employeedesk.entity;
 
 import com.app.employeedesk.auditing.AuditWithBaseEntity;
+import com.app.employeedesk.enumeration.HalfDaySession;
 import com.app.employeedesk.enumeration.LeaveStatus;
 import com.app.employeedesk.enumeration.LeaveType;
 import jakarta.persistence.*;
@@ -32,10 +33,13 @@ public class LeaveRequestV2 extends AuditWithBaseEntity {
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    private int numberOfDays;
+    private double numberOfDays;
 
     private String reason;
 
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
+
+    private Boolean halfDay;
+    private HalfDaySession halfDaySession;
 }

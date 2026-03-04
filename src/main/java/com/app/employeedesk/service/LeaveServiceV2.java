@@ -44,7 +44,20 @@ public class LeaveServiceV2 {
         }
 
         // 3️⃣ Calculate number of days
-        int days = calculateDays(dto.getFromDate(), dto.getToDate());
+
+        boolean isHalfDay = Boolean.TRUE.equals(dto.getHalfDay());
+        if (isHalfDay && !dto.getFromDate().equals(dto.getToDate())) {
+            throw new RuntimeException("Half-day leave can only be applied for a single day");
+        }
+        if (isHalfDay && dto.getHalfDaySession() == null) {
+            throw new RuntimeException("Half-day session is required for half-day leave");
+        }
+        if (!isHalfDay && dto.getHalfDaySession() != null) {
+            throw new RuntimeException("Half-day session should only be provided for half-day leave");
+        }
+
+        double days = calculateDays(dto.getFromDate(), dto.getToDate(), isHalfDay);
+
 
         if (days <= 0) {
             throw new RuntimeException("Invalid leave duration");
@@ -122,7 +135,11 @@ public class LeaveServiceV2 {
     }
 
 
-    private int calculateDays(LocalDate from, LocalDate to) {
-        return (int) ChronoUnit.DAYS.between(from, to) + 1;
+
+    private double calculateDays(LocalDate from, LocalDate to, boolean isHalfDay) {
+        if (isHalfDay) {
+            return 0.5;
+        }
+        return ChronoUnit.DAYS.between(from, to) + 1;
     }
 }

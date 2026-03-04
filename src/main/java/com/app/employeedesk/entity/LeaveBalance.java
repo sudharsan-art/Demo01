@@ -25,10 +25,8 @@ public class LeaveBalance {
     @Column(nullable = false)
     private String leaveCode;
 
-    private int totalAllocated;
-
-    private int usedDays;
-
-    private int remainingDays;
+    private double totalAllocated;
+    private double usedDays;
+    private double remainingDays;
 }
 

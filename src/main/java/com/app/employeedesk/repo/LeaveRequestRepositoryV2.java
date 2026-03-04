@@ -24,7 +24,7 @@ public interface LeaveRequestRepositoryV2 extends JpaRepository<LeaveRequestV2, 
         and l.status = com.app.employeedesk.enumeration.LeaveStatus.ACCEPT
         and l.fromDate between :startDate and :endDate
         """)
-    int sumApprovedLeavesForEmployeeThisYear(
+    double sumApprovedLeavesForEmployeeThisYear(
             @Param("employeeId") UUID employeeId,
             @Param("leaveType") LeaveType leaveType,
             @Param("startDate") LocalDate startDate,
