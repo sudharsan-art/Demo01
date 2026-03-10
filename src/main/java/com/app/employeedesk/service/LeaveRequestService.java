@@ -247,8 +247,8 @@ public class LeaveRequestService {
 
     public String createLeaveRequestV2(Principal principal, LeaveRequestCreateV2Dto dto) {
         // 1) load employee + role
-        // 2) fetch active role policies
-        // 3) ensure dto.leaveCode exists in role policy
+        // 2) fetch active employee policies
+        // 3) ensure dto.leaveCode exists in employee policy
         // 4) save request with PENDING status
         // 5) return success key
         return messageService.messageResponse("leave.request.sent.successfully");

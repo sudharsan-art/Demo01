@@ -1,10 +1,7 @@
 package com.app.employeedesk.entity;
 
 import com.app.employeedesk.auditing.AuditWithBaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serial;
@@ -27,8 +24,12 @@ public class LeavePolicy extends AuditWithBaseEntity implements Serializable {
     @Id
     private UUID id;
 
-    @Column(name="role",nullable = false,length = 50)
+    @Column(name="role",length = 50)
     private String role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    private UserDetails employee;
 
     @Column(name = "leave_code", nullable = false, length = 50)
     private String leaveCode; // CL, SL, EL, etc

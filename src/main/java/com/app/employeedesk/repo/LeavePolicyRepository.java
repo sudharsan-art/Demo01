@@ -8,7 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface LeavePolicyRepository extends JpaRepository<LeavePolicy, UUID> {
-    List<LeavePolicy> findByRoleAndActiveTrue(String role);
+    List<LeavePolicy> findByEmployeeIdAndActiveTrue(UUID employeeId);
 
-    Optional<LeavePolicy> findByRoleAndLeaveCode(String role, String leaveCode);
+    Optional<LeavePolicy> findByEmployeeIdAndLeaveCode(UUID employeeId, String leaveCode);
+
+    // role templates (employee is null)
+    List<LeavePolicy> findByRoleAndEmployeeIsNullAndActiveTrue(String role);
 }
