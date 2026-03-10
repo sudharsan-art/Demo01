@@ -31,17 +31,17 @@ public class LevePolicyController {
         return responseGenerator.successResponse(ctx,data, HttpStatus.OK);
     }
 
-    @GetMapping("/role/{role}")
-    public ResponseEntity<Response> byRole(@PathVariable String role, @RequestHeader HttpHeaders headers) {
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<Response> byRole(@PathVariable String employeeID, @RequestHeader HttpHeaders headers,Principal principal) {
         TransactionContext ctx = responseGenerator.generateTransationContext(headers);
-        List<LeavePolicyDto> data = leavePolicyService.getPoliciesByRole(role);
+        List<LeavePolicyDto> data = leavePolicyService.getPoliciesByEmployee(employeeID, principal);
         return responseGenerator.successResponse(ctx, data, HttpStatus.OK);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Response> save(@RequestBody LeavePolicyDto dto, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<Response> save(@RequestBody LeavePolicyDto dto, @RequestHeader HttpHeaders headers,Principal principal) {
         TransactionContext ctx = responseGenerator.generateTransationContext(headers);
-        LeavePolicyDto data = leavePolicyService.createOrUpdate(dto);
+        LeavePolicyDto data = leavePolicyService.createOrUpdate(dto, principal);
         return responseGenerator.successResponse(ctx, data, HttpStatus.OK);
     }
 }
