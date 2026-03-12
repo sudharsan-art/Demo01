@@ -32,9 +32,9 @@ public class LevePolicyController {
     }
 
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<Response> byRole(@PathVariable String employeeID, @RequestHeader HttpHeaders headers,Principal principal) {
+    public ResponseEntity<Response> byRole(@PathVariable("employeeId") String employeeId, @RequestHeader HttpHeaders headers, Principal principal) {
         TransactionContext ctx = responseGenerator.generateTransationContext(headers);
-        List<LeavePolicyDto> data = leavePolicyService.getPoliciesByEmployee(employeeID, principal);
+        List<LeavePolicyDto> data = leavePolicyService.getPoliciesByEmployee(employeeId, principal);
         return responseGenerator.successResponse(ctx, data, HttpStatus.OK);
     }
 
