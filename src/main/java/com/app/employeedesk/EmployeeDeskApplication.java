@@ -6,16 +6,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 
+import java.util.Optional;
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableJpaAuditing(auditorAwareRef = "auditorAware")
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 @EnableScheduling
 public class EmployeeDeskApplication {
 
@@ -30,6 +34,23 @@ public class EmployeeDeskApplication {
         messageSource.setBasename("classpath:message/message");
         messageSource.setCacheSeconds(10); //reload messages every 10 seconds
         return messageSource;
+    }
+
+
+    @Bean
+    public AuditorAware<String> auditorAware() {
+        return () -> {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null ||
+                    !authentication.isAuthenticated() ||
+                    "anonymousUser".equals(authentication.getPrincipal())) {
+                // For scheduled tasks or system processes that are not user-driven
+                return Optional.of("system");
+            }
+
+            return Optional.of(authentication.getName());
+        };
     }
 
     @Bean
