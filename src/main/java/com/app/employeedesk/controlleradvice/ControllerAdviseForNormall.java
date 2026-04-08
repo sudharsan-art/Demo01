@@ -18,4 +18,10 @@ public class ControllerAdviseForNormall {
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
 
     }
+    @ExceptionHandler(ObjectInvalidException.class)
+    public ResponseEntity<?> objectInvalidException(TimeIncorrectException exception, WebRequest request){
+        ErrorDetails details=new ErrorDetails(LocalTime.now(), exception.getMessage(),request.getDescription(false));
+        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+
+    }
 }

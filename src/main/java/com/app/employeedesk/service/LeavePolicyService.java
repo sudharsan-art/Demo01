@@ -3,9 +3,11 @@ package com.app.employeedesk.service;
 import com.app.employeedesk.dto.EmployeeLeaveConfigViewDto;
 import com.app.employeedesk.dto.LeavePolicyDto;
 import com.app.employeedesk.entity.EmployeeBasicDetails;
+import com.app.employeedesk.entity.LeaveMaster;
 import com.app.employeedesk.entity.LeavePolicy;
 import com.app.employeedesk.entity.UserDetails;
 import com.app.employeedesk.exception.CustomValidationsException;
+import com.app.employeedesk.repo.LeaveMasterRepository;
 import com.app.employeedesk.repo.LeavePolicyRepository;
 import com.app.employeedesk.repo.UserDetailsRepository;
 import com.app.employeedesk.response.MessageService;
@@ -26,6 +28,7 @@ public class LeavePolicyService {
     private final UserDetailsRepository userDetailsRepository;
     private final EmployeePersonalDetailsService employeePersonalDetailsService;
     private final MessageService messageService;
+    private final LeaveMasterRepository leaveMasterRepository;
 
 
     public EmployeeLeaveConfigViewDto getEmployeeLEaveConfig(Principal principal) {
@@ -58,6 +61,7 @@ public class LeavePolicyService {
     }
 
     public LeavePolicyDto createOrUpdate(LeavePolicyDto dto, Principal principal) {
+
         requireAdminOrHr(principal);
 
         if (dto.getEmployeeId() == null || dto.getEmployeeId().isBlank()) {
@@ -67,26 +71,29 @@ public class LeavePolicyService {
         UserDetails employee = userDetailsRepository.findById(UUID.fromString(dto.getEmployeeId()))
                 .orElseThrow(() -> new CustomValidationsException("employee not found"));
 
+        LeaveMaster leaveMaster = leaveMasterRepository
+                .findByLeaveCode(dto.getLeaveCode())
+                .orElseThrow(() -> new CustomValidationsException("Invalid leave type"));
+
         LeavePolicy entity = dto.getId() != null
-                ? leavePolicyRepository.findById(UUID.fromString(dto.getId())).orElse(LeavePolicy.builder().id(UUID.randomUUID()).build())
-                : leavePolicyRepository.findByEmployeeIdAndLeaveCode(employee.getId(), dto.getLeaveCode())
+                ? leavePolicyRepository.findById(UUID.fromString(dto.getId()))
+                .orElse(LeavePolicy.builder().id(UUID.randomUUID()).build())
+                : leavePolicyRepository.findByEmployeeAndLeave(employee, leaveMaster)
                 .orElse(LeavePolicy.builder().id(UUID.randomUUID()).build());
 
         entity.setRole(employee.getRole().name());
         entity.setEmployee(employee);
-        entity.setLeaveCode(dto.getLeaveCode());
-        entity.setLeaveName(dto.getLeaveName());
+        entity.setLeave(leaveMaster);
         entity.setDaysPerMonth(dto.getDaysPerMonth());
         entity.setDaysPerYear(dto.getDaysPerYear());
         entity.setPaid(Boolean.TRUE.equals(dto.getPaid()));
         entity.setActive(dto.getActive() == null || dto.getActive());
 
-
         return map(leavePolicyRepository.save(entity));
     }
 
     private List<LeavePolicy> getOrInitializeEmployeePolicies(UserDetails employee) {
-        List<LeavePolicy> existing = leavePolicyRepository.findByEmployeeIdAndActiveTrue(employee.getId());
+        List<LeavePolicy> existing = leavePolicyRepository.findByEmployee_IdAndActiveTrue(employee.getId());
         if (!existing.isEmpty()) {
             return existing;
         }
@@ -102,8 +109,7 @@ public class LeavePolicyService {
                         .id(UUID.randomUUID())
                         .role(employee.getRole().name())
                         .employee(employee)
-                        .leaveCode(template.getLeaveCode())
-                        .leaveName(template.getLeaveName())
+                        .leave(template.getLeave())
                         .daysPerMonth(template.getDaysPerMonth())
                         .daysPerYear(template.getDaysPerYear())
                         .paid(Boolean.TRUE.equals(template.getPaid()))
@@ -120,8 +126,8 @@ public class LeavePolicyService {
         dto.setEmployeeId(
                 leavePolicy.getEmployee() != null ? leavePolicy.getEmployee().getId().toString() : null
         );
-        dto.setLeaveCode(leavePolicy.getLeaveCode());
-        dto.setLeaveName(leavePolicy.getLeaveName());
+        dto.setLeaveCode(leavePolicy.getLeave().getLeaveCode());
+        dto.setLeaveName(leavePolicy.getLeave().getLeaveName());
         dto.setDaysPerMonth(leavePolicy.getDaysPerMonth());
         dto.setDaysPerYear(leavePolicy.getDaysPerYear());
         dto.setPaid(leavePolicy.getPaid());

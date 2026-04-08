@@ -9,6 +9,7 @@ import com.app.employeedesk.enumeration.LeaveStatus;
 import com.app.employeedesk.enumeration.LeaveType;
 import com.app.employeedesk.exception.CustomValidationsException;
 import com.app.employeedesk.repo.LeaveRequestRepository;
+import com.app.employeedesk.repo.YearMasterRepository;
 import com.app.employeedesk.response.MessageService;
 import com.app.employeedesk.util.DateUtil;
 import com.app.employeedesk.validation.LeaveRequestValidation;
@@ -40,6 +41,7 @@ public class LeaveRequestService {
 
     private final EmployeeShiftWeekOffService employeeShiftWeekOffService;
 
+    private final YearMasterRepository yearMasterRepository;
 
     private final EntityManager entityManager;
 

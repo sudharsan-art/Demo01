@@ -6,9 +6,11 @@ import lombok.Getter;
 public enum LeaveStatus {
     ACCEPT("Accept"),
     REJECT("Reject"),
-    PENDING("Pending");
+    PENDING("Pending"),
+    CANCELLED("Cancelled");
     private final String status;
+
     LeaveStatus(String status) {
-        this.status=status;
+        this.status = status;
     }
 }
