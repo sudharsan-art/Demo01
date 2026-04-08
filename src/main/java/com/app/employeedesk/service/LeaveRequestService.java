@@ -9,6 +9,7 @@ import com.app.employeedesk.enumeration.LeaveStatus;
 import com.app.employeedesk.enumeration.LeaveType;
 import com.app.employeedesk.exception.CustomValidationsException;
 import com.app.employeedesk.repo.LeaveRequestRepository;
+import com.app.employeedesk.repo.YearMasterRepository;
 import com.app.employeedesk.response.MessageService;
 import com.app.employeedesk.util.DateUtil;
 import com.app.employeedesk.validation.LeaveRequestValidation;
@@ -40,6 +41,7 @@ public class LeaveRequestService {
 
     private final EmployeeShiftWeekOffService employeeShiftWeekOffService;
 
+    private final YearMasterRepository yearMasterRepository;
 
     private final EntityManager entityManager;
 
@@ -59,30 +61,20 @@ public class LeaveRequestService {
         if (leaveValidation) {
             throw new CustomValidationsException(messageService.messageResponse("leave.request.data.already.exist"));
         }
-        boolean startStatus = checkLeaveDayTypeStatus(dto.getStartDateStatus());
-        boolean endStatus = checkLeaveDayTypeStatus(dto.getEndDateStatus());
-        LeaveDayType startDateStatus = null;
-        LeaveDayType endDateStatus = null;
-        if (dto.getStartDateStatus()!=null && dto.getEndDateStatus()!=null) {
-            startDateStatus = LeaveDayType.valueOf(dto.getStartDateStatus());
-            endDateStatus = LeaveDayType.valueOf(dto.getEndDateStatus());
-        }
+        LeaveDayType startDateStatus = dto.getStartDateStatus() != null ? LeaveDayType.valueOf(dto.getStartDateStatus()) : null;
+        LeaveDayType endDateStatus = dto.getEndDateStatus() != null ? LeaveDayType.valueOf(dto.getEndDateStatus()) : null;
         leaveRepository.save(LeaveRequest.builder()
                 .leaveDayType(LeaveDayType.valueOf(dto.getLeaveDayType()))
                 .leaveStatus(LeaveStatus.PENDING)
                 .leaveType(LeaveType.valueOf(dto.getLeaveType()))
                 .fromDate(DateUtil.parseLocalDate(dto.getFromDate()))
                 .endDate(DateUtil.parseLocalDate(dto.getEndDate()))
-                .startDateStatus(startStatus ? startDateStatus : null)
-                .endDateStatus(endStatus ? endDateStatus : null)
+                .startDateStatus(startDateStatus)
+                .endDateStatus(endDateStatus)
                 .reason(dto.getReason())
                 .employeeId(basicDetails)
                 .build());
         return messageService.messageResponse("leave.request.sent.successfully");
-    }
-
-    private boolean checkLeaveDayTypeStatus(String status) {
-        return status != null;
     }
 
     //update a leave request (time=1.5hr)
@@ -103,14 +95,8 @@ public class LeaveRequestService {
         EmployeeBasicDetails employee = personalDetailsService.findEmployeeById(UUID.fromString(dto.getEmployeeID()));
         List<EmployeeWeekOff> weekOff = employeeShiftWeekOffService.findEmployeeSiftWeekOf(employeeId);
         leaveRequestValidation.checkGivenDateIsAvailableInWeekOFDays(dto.getFromDate(), dto.getEndDate(), weekOff);
-        boolean startStatus = checkLeaveDayTypeStatus(dto.getStartDateStatus());
-        boolean endStatus = checkLeaveDayTypeStatus(dto.getEndDateStatus());
-        LeaveDayType startDateStatus = null;
-        LeaveDayType endDateStatus = null;
-        if (dto.getStartDateStatus()!=null && dto.getEndDateStatus()!=null) {
-            startDateStatus = LeaveDayType.valueOf(dto.getStartDateStatus());
-            endDateStatus = LeaveDayType.valueOf(dto.getEndDateStatus());
-        }
+        LeaveDayType startDateStatus = dto.getStartDateStatus() != null ? LeaveDayType.valueOf(dto.getStartDateStatus()) : null;
+        LeaveDayType endDateStatus = dto.getEndDateStatus() != null ? LeaveDayType.valueOf(dto.getEndDateStatus()) : null;
         assert startDate != null;
         if (LeaveStatus.valueOf(dto.getLeaveStatus()).equals(LeaveStatus.PENDING)) {
             leaveRepository.save(LeaveRequest.builder()
@@ -120,8 +106,8 @@ public class LeaveRequestService {
                     .leaveType(LeaveType.valueOf(dto.getLeaveType()))
                     .fromDate(DateUtil.parseLocalDate(dto.getFromDate()))
                     .endDate(DateUtil.parseLocalDate(dto.getEndDate()))
-                    .startDateStatus(startStatus ? startDateStatus : null)
-                    .endDateStatus(endStatus ? endDateStatus : null)
+                    .startDateStatus(startDateStatus)
+                    .endDateStatus(endDateStatus)
                     .reason(dto.getReason())
                     .employeeId(employee)
                     .build());
@@ -247,8 +233,8 @@ public class LeaveRequestService {
 
     public String createLeaveRequestV2(Principal principal, LeaveRequestCreateV2Dto dto) {
         // 1) load employee + role
-        // 2) fetch active role policies
-        // 3) ensure dto.leaveCode exists in role policy
+        // 2) fetch active employee policies
+        // 3) ensure dto.leaveCode exists in employee policy
         // 4) save request with PENDING status
         // 5) return success key
         return messageService.messageResponse("leave.request.sent.successfully");

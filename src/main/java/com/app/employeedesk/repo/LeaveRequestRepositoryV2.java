@@ -1,8 +1,9 @@
 package com.app.employeedesk.repo;
 
+import com.app.employeedesk.entity.LeaveMaster;
 import com.app.employeedesk.entity.LeaveRequestV2;
 import com.app.employeedesk.enumeration.LeaveStatus;
-import com.app.employeedesk.enumeration.LeaveType;
+import com.app.employeedesk.enumeration.LeaveTypeV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,16 +18,16 @@ public interface LeaveRequestRepositoryV2 extends JpaRepository<LeaveRequestV2, 
     List<LeaveRequestV2> findByStatus(LeaveStatus status);
 
     @Query("""
-        select coalesce(sum(l.numberOfDays), 0)
-        from LeaveRequestV2 l
-        where l.employee.id = :employeeId
-        and l.leaveType = :leaveType
-        and l.status = com.app.employeedesk.enumeration.LeaveStatus.ACCEPT
-        and l.fromDate between :startDate and :endDate
-        """)
-    int sumApprovedLeavesForEmployeeThisYear(
+select coalesce(sum(l.numberOfDays), 0)
+from LeaveRequestV2 l
+where l.employee.id = :employeeId
+and l.leave = :leave
+and l.status = com.app.employeedesk.enumeration.LeaveStatus.ACCEPT
+and l.fromDate between :startDate and :endDate
+""")
+    double sumApprovedLeavesForEmployeeThisYear(
             @Param("employeeId") UUID employeeId,
-            @Param("leaveType") LeaveType leaveType,
+            @Param("leave") LeaveMaster leave,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
@@ -38,5 +39,11 @@ public interface LeaveRequestRepositoryV2 extends JpaRepository<LeaveRequestV2, 
             LocalDate fromDate
     );
 
+    List<LeaveRequestV2> findByEmployee_IdAndStatus(UUID employeeId, LeaveStatus status);
 
+    List<LeaveRequestV2> findByEmployee_IdAndYear_IdAndStatus(
+            UUID employeeId,
+            UUID yearId,
+            LeaveStatus status
+    );
 }

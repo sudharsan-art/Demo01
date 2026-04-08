@@ -1,12 +1,10 @@
 package com.app.employeedesk.security;
 
 
-import com.app.employeedesk.auditing.ApplicationAuditAware;
 import com.app.employeedesk.repo.UserDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,7 +22,7 @@ public class     ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username ->  repository.findByUserName(username)
+        return username -> repository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("user name not found"));
 
     }
@@ -46,10 +44,7 @@ public class     ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-    @Bean
-    public AuditorAware<String> auditorAware() {
-        return new ApplicationAuditAware();
-    }
 }
+
+
 

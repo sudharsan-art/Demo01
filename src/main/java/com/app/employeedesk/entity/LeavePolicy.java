@@ -1,10 +1,7 @@
 package com.app.employeedesk.entity;
 
 import com.app.employeedesk.auditing.AuditWithBaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serial;
@@ -12,7 +9,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "leave_policy")
+@Table(name = "leave_policy", uniqueConstraints = {@UniqueConstraint(name = "uk_employee_leave_code", columnNames = {"employee_id", "leave_code"})})
 @Getter
 @Setter
 @Builder
@@ -22,19 +19,17 @@ import java.util.UUID;
 public class LeavePolicy extends AuditWithBaseEntity implements Serializable {
 
     @Serial
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @Id
     private UUID id;
 
-    @Column(name="role",nullable = false,length = 50)
+    @Column(name = "role", length = 50)
     private String role;
 
-    @Column(name = "leave_code", nullable = false, length = 50)
-    private String leaveCode; // CL, SL, EL, etc
-
-    @Column(name = "leave_name", nullable = false, length = 100)
-    private String leaveName; // Casual Leave, Sick Leave
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leave_id", nullable = false)
+    private LeaveMaster leave;
 
     @Column(name = "days_per_month")
     private Integer daysPerMonth;
@@ -48,5 +43,8 @@ public class LeavePolicy extends AuditWithBaseEntity implements Serializable {
     @Column(name = "is_active", nullable = false)
     private Boolean active;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    private UserDetails employee;
 
 }

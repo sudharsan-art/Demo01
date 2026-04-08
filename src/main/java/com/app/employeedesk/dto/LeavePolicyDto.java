@@ -6,6 +6,7 @@ import lombok.Data;
 public class LeavePolicyDto {
     private String id;
     private String role;
+    private String employeeId;
     private String leaveCode;
     private String leaveName;
     private Integer daysPerMonth;

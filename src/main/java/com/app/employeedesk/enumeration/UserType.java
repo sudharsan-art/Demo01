@@ -1,5 +1,5 @@
 package com.app.employeedesk.enumeration;
 
 public enum UserType {
-	USER,ADMIN
+	USER,ADMIN,HR_ADMIN
 }

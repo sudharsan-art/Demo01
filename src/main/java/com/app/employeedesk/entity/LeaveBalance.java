@@ -22,13 +22,12 @@ public class LeaveBalance {
     @JoinColumn(name = "employee_id", nullable = false)
     private UserDetails employee;
 
-    @Column(nullable = false)
-    private String leaveCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leave_id", nullable = false)
+    private LeaveMaster leave;
 
-    private int totalAllocated;
-
-    private int usedDays;
-
-    private int remainingDays;
+    private double totalAllocated;
+    private double usedDays;
+    private double remainingDays;
 }
 

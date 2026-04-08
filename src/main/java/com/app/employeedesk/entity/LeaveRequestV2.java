@@ -1,8 +1,9 @@
 package com.app.employeedesk.entity;
 
 import com.app.employeedesk.auditing.AuditWithBaseEntity;
+import com.app.employeedesk.enumeration.HalfDaySession;
 import com.app.employeedesk.enumeration.LeaveStatus;
-import com.app.employeedesk.enumeration.LeaveType;
+import com.app.employeedesk.enumeration.LeaveTypeV2;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,16 +27,24 @@ public class LeaveRequestV2 extends AuditWithBaseEntity {
     @JoinColumn(name = "employee_id", nullable = false)
     private UserDetails employee;
 
-    @Enumerated(EnumType.STRING)
-    private LeaveType leaveType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leave_id", nullable = false)
+    private LeaveMaster leave;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "year_id")
+    private YearMaster year;
 
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    private int numberOfDays;
+    private double numberOfDays;
 
     private String reason;
 
     @Enumerated(EnumType.STRING)
     private LeaveStatus status;
+
+    private Boolean halfDay;
+    private HalfDaySession halfDaySession;
 }
